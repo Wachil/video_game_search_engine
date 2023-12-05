@@ -15,16 +15,23 @@ import java.util.List;
 @SpringBootApplication
 public class Launcher {
 
+    private static RabbitTemplate rabbitTemplate = null;
+
+    public static void setRabbitTemplate(RabbitTemplate template) {
+        rabbitTemplate = template;
+    }
+
     public static void main(String[] args) throws IOException {
         try (AbstractApplicationContext springContext = new AnnotationConfigApplicationContext(Launcher.class)) {
             if (args.length > 0) {
                 ObjectMapper mapper = new ObjectMapper();
                 List<GameInfo> gameInfos = Arrays.asList(mapper.readValue(Paths.get(args[0]).toFile(), GameInfo[].class));
-                RabbitTemplate rabbitTemplate = springContext.getBean(RabbitTemplate.class);
-                rabbitTemplate.setMessageConverter(new Jackson2JsonMessageConverter());
+
+                RabbitTemplate template = (rabbitTemplate != null) ? rabbitTemplate : springContext.getBean(RabbitTemplate.class);
+                template.setMessageConverter(new Jackson2JsonMessageConverter());
 
                 for (GameInfo gameInfo : gameInfos) {
-                    rabbitTemplate.convertAndSend("", "game_info", gameInfo, message -> {
+                    template.convertAndSend("", "game_info", gameInfo, message -> {
                         message.getMessageProperties().getHeaders().put("game_id", gameInfo.id());
                         return message;
                     });
@@ -33,3 +40,4 @@ public class Launcher {
         }
     }
 }
+

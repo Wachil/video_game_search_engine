@@ -27,7 +27,7 @@ public class GameController {
 
     @GetMapping("/api/games")
     public List<Map<String, Object>> searchGames(@RequestParam String query) throws IOException {
-        SearchRequest searchRequest = new SearchRequest("games");
+        SearchRequest searchRequest = new SearchRequest();
         SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
         sourceBuilder.query(new QueryStringQueryBuilder(query));
         sourceBuilder.size(10);
