@@ -63,5 +63,24 @@ class LauncherTest {
         String jsonGameFilePath = gameFile.getAbsolutePath() + "/games.json";
         Launcher.main(new String[]{jsonGameFilePath});
     }
+    @Test
+    void exceptionThrownWithInvalidFilePath() {
+        String invalidFilePath = "invalid_path/games.json";
+        assertThrows(IOException.class, () -> Launcher.main(new String[]{invalidFilePath}));
+    }
+
+    @Test
+    void exceptionThrownWithInvalidFile() {
+        String invalidFilePath = "invalid_path/games.json";
+        assertThrows(IOException.class, () -> Launcher.main(new String[]{invalidFilePath}));
+    }
+
+    @Test
+    void exceptionThrownWithMalformedJsonContent() {
+        File gameFile = new File("src/test/resources/malformed.json");
+        String malformedJsonFilePath = gameFile.getAbsolutePath();
+        assertThrows(IOException.class, () -> Launcher.main(new String[]{malformedJsonFilePath}));
+    }
+
 
 }
