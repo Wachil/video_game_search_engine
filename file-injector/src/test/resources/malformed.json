@@ -1,0 +1,15 @@
+
+{
+    "game": {
+        "title": "Example Game",
+        "genre": "Adventure, "
+        "developer": "GameStudio
+        "releaseDate": "2021-01-30"
+    },
+    "anotherGame": {
+        "title": "Another Game",
+        "genre": "Puzzle",
+        "developer": "AnotherStudio",
+        "releaseDate": "2022-07-15"
+    }
+}
