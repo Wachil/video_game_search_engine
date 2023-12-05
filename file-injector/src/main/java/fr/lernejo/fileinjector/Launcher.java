@@ -15,17 +15,8 @@ import java.util.List;
 @SpringBootApplication
 public class Launcher {
 
-    private static RabbitTemplate rabbitTemplate;
-
-    public static void setRabbitTemplate(RabbitTemplate template) {
-        rabbitTemplate = template;
-    }
     public static void main(String[] args) throws IOException {
         try (AbstractApplicationContext springContext = new AnnotationConfigApplicationContext(Launcher.class)) {
-            if (rabbitTemplate == null) {
-                rabbitTemplate = springContext.getBean(RabbitTemplate.class);
-            }
-            rabbitTemplate.setMessageConverter(new Jackson2JsonMessageConverter());
             if (args.length > 0) {
                 ObjectMapper mapper = new ObjectMapper();
                 List<GameInfo> gameInfos = Arrays.asList(mapper.readValue(Paths.get(args[0]).toFile(), GameInfo[].class));
