@@ -1,22 +1,19 @@
 package fr.lernejo.search.api;
 
 import org.elasticsearch.action.search.SearchRequest;
-import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.client.RestHighLevelClient;
-import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.client.RequestOptions;
+import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.index.query.QueryStringQueryBuilder;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Map;
 
 @RestController
 public class GameController {
@@ -28,19 +25,21 @@ public class GameController {
         this.client = client;
     }
 
-    @GetMapping("/api/searchGames")
-    public List<String> searchGames(@RequestParam String query) throws IOException {
+    @GetMapping("/api/games")
+    public List<Map<String, Object>> searchGames(@RequestParam String query) throws IOException {
         SearchRequest searchRequest = new SearchRequest("games");
         SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
-        sourceBuilder.query(QueryBuilders.queryStringQuery(query));
+        sourceBuilder.query(new QueryStringQueryBuilder(query));
         sourceBuilder.size(10);
         searchRequest.source(sourceBuilder);
 
-        SearchResponse response = client.search(searchRequest, RequestOptions.DEFAULT);
-        SearchHit[] hits = response.getHits().getHits();
-        return Arrays.stream(hits)
-            .map(SearchHit::getSourceAsString)
-            .collect(Collectors.toList());
+        List<Map<String, Object>> results = new ArrayList<>();
+        client.search(searchRequest, RequestOptions.DEFAULT)
+            .getHits()
+            .forEach(hit -> results.add(hit.getSourceAsMap()));
+
+        return results;
     }
 }
+
 
