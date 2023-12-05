@@ -11,17 +11,26 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 
+import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.elasticsearch.client.RestHighLevelClient;
+import org.springframework.amqp.core.Message;
+import org.springframework.amqp.core.MessageProperties;
+
+
 @Component
 public class GameInfoListener {
 
     private final RestHighLevelClient elasticsearchClient;
+    private final AmqpConfiguration amqpConfiguration;
 
     @Autowired
-    public GameInfoListener(RestHighLevelClient elasticsearchClient) {
+    public GameInfoListener(RestHighLevelClient elasticsearchClient, AmqpConfiguration amqpConfiguration) {
         this.elasticsearchClient = elasticsearchClient;
+        this.amqpConfiguration = amqpConfiguration;
     }
 
-    @RabbitListener(queues = AmqpConfiguration.GAME_INFO_QUEUE)
+    @RabbitListener(queues = "#{amqpConfiguration.gameInfoQueue}")
     public void onMessage(Message message) {
         String messageBody = new String(message.getBody());
         MessageProperties properties = message.getMessageProperties();
